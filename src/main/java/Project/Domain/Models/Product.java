@@ -17,6 +17,10 @@ public class Product {
         this.description = description;
         this.price = price;
     }
+
+    public Product(String id, String name, double price) {
+    }
+
     public String getId() {
         return id;
     }
