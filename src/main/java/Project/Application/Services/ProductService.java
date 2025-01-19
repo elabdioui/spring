@@ -22,6 +22,13 @@ public class ProductService {
     public ProductService(ProductRepository productRepository, ProductService productService) {
         this.productRepository = productRepository;
     }
+    public ProductDTO getProductById(String id) {
+        Optional<Product> productOpt = productRepository.findById(id);
+        return productOpt.map(this::convertToDTO).orElse(null); // Convert to DTO
+    }
+    private ProductDTO convertToDTO(Product product) {
+        return new ProductDTO(product.getId(), product.getName(), product.getPrice());
+    }
 
 
 }
