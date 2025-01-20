@@ -2,38 +2,52 @@ package Project.Infrastructure.Repository;
 
 import Project.Domain.Interfaces.ProductRepository;
 import Project.Domain.Models.Product;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class MongoProductRepository implements ProductRepository {
 
-    private final MongoTemplate mongoTemplate;
+    private final MongoProductRepository repository;
 
-    public MongoProductRepository(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
-
-
-    @Override
-    public Optional<Product> findById(String id) {
-        Product product = mongoTemplate.findById(id, Product.class);
-        return Optional.ofNullable(product);
+    @Autowired
+    public MongoProductRepository(MongoRepository<Product, String> repository) {
+        this.repository = (MongoProductRepository) repository;
     }
 
     @Override
     public List<Product> findByName(String name) {
-        return mongoTemplate.find(Query.query(Criteria.where("name").is(name)), Product.class);
+        return repository.findAll().stream()
+                .filter(product -> product.getName().equalsIgnoreCase(name))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Product> findAll() {
+        return repository.findAll();
     }
 
     @Override
     public Product save(Product product) {
-        mongoTemplate.save(product);
-        return product;
+        return repository.save(product);
     }
+
+    @Override
+    public void deleteById(String id) {
+        repository.deleteById(id);
+    }
+
+    @Override
+    public Product findById(String id) {
+        return repository.findById(id);
+    }
+
 }
