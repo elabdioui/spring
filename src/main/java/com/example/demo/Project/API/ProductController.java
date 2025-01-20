@@ -1,13 +1,14 @@
-package Project.API;
+package com.example.demo.Project.API;
 
-import Project.Application.DTO.ProductDTO;
-import Project.Application.Services.ProductService;
+import com.example.demo.Project.Application.Services.ProductService;
+import com.example.demo.Project.Domain.Models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
@@ -22,10 +23,10 @@ public class ProductController {
 
     // Get product by ID
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable String id) {
-        ProductDTO product = productService.getProductById(id);
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        Optional<Product> product = productService.getProductById(id);
         if (product != null) {
-            return ResponseEntity.ok(product); // Return the product if found
+            return ResponseEntity.ok(product.get()); // Return the product if found
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if not found
         }
@@ -33,8 +34,8 @@ public class ProductController {
 
     // Get all products by name
     @GetMapping("/name/{name}")
-    public ResponseEntity<List<ProductDTO>> getProductsByName(@PathVariable String name) {
-        List<ProductDTO> products = productService.getProductsByName(name);
+    public ResponseEntity<List<Product>> getProductsByName(@PathVariable String name) {
+        List<Product> products = productService.getProductsByName(name);
         if (products.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if no products found
         }
@@ -43,25 +44,21 @@ public class ProductController {
 
     // Get all products
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        List<ProductDTO> products = productService.getAllProducts();
-        if (products.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 if no products exist
-        }
-        return ResponseEntity.ok(products); // Return the list of all products
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
     }
 
     // Create a new product
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
-        ProductDTO savedProduct = productService.saveProduct(productDTO);
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+        Product savedProduct = productService.saveProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedProduct); // Return 201 with saved product
     }
 
     // Update a product by ID
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable String id, @RequestBody ProductDTO productDTO) {
-        ProductDTO updatedProduct = productService.updateProduct(id, productDTO);
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        Product updatedProduct = productService.updateProduct(id, product);
         if (updatedProduct != null) {
             return ResponseEntity.ok(updatedProduct); // Return the updated product
         } else {
@@ -71,7 +68,7 @@ public class ProductController {
 
     // Delete a product by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         boolean isDeleted = productService.deleteProduct(id);
         if (isDeleted) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // Return 204 if deleted successfully

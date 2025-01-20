@@ -1,22 +1,22 @@
-package Project.Application.DTO;
+package com.example.demo.Project.Application.DTO;
 
 public class ProductDTO {
-    private String id;
+    private Long id;
     private String name;
     private double price;
 
     // Constructors, Getters, Setters
-    public ProductDTO(String id, String name, double price) {
+    public ProductDTO(Long id, String name, double price) {
         this.id = id;
         this.name = name;
         this.price = price;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
